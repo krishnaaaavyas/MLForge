@@ -1,4 +1,4 @@
-from mlfs.optimizers import GradientDescent
+from mlforge.optimizers import GradientDescent
 
 optimizer = GradientDescent(learning_rate=0.2)
 
