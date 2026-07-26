@@ -1,0 +1,20 @@
+from mlforge.core.neuron import Neuron
+
+
+class LinearRegression:
+
+    def __init__(self):
+
+        self.neuron = Neuron(
+            weight=0,
+            bias=0,
+        )
+
+        self.loss_history = []
+
+    def predict(self, X):
+
+        return [
+            self.neuron.forward(x)
+            for x in X
+        ]
