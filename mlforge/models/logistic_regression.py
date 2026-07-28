@@ -43,3 +43,20 @@ class LogisticRegression:
                 predictions.append(0)
 
         return predictions
+    def backward(self, X, gradients):
+
+        dw = 0.0
+        db = 0.0
+
+        n = len(X)
+
+        for x, grad in zip(X, gradients):
+
+            dw += grad * x
+            db += grad
+
+        self.linear.weight.grad = dw / n
+        self.linear.bias.grad = db / n
+
+    def parameters(self):
+        return self.linear.parameters()
