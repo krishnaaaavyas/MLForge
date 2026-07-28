@@ -23,3 +23,14 @@ class BinaryCrossEntropy:
             )
 
         return loss / len(predictions)
+
+    def backward(self, predictions, targets):
+    
+        gradients = []
+
+        n = len(predictions)
+
+        for p, y in zip(predictions, targets):
+            gradients.append((p - y) / n)
+
+        return gradients
