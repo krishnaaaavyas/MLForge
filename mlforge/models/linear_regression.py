@@ -12,7 +12,7 @@ class LinearRegression:
 
         self.loss_history = []
 
-    def predict(self, X):
+    def forward(self, X):
 
         return [
             self.neuron.forward(x)
