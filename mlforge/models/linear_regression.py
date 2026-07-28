@@ -1,4 +1,4 @@
-from mlforge.core.neuron import Neuron
+from mlforge.core.linear import Neuron
 
 
 class LinearRegression:

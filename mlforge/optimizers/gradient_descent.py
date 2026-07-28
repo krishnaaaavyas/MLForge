@@ -1,15 +1,20 @@
 class GradientDescent:
 
     def __init__(self, learning_rate=0.01):
+
         self.learning_rate = learning_rate
 
+    def step(self, parameters):
 
-    def step(self, parameter):
+        for parameter in parameters:
 
-        parameter.value -= (
-            self.learning_rate * parameter.grad
-        )
+            parameter.value -= (
+                self.learning_rate
+                * parameter.grad
+            )
 
-    def step(self, weight, gradient):
-        return weight - self.learning_rate * gradient
+    def zero_grad(self, parameters):
 
+        for parameter in parameters:
+
+            parameter.grad = 0.0
