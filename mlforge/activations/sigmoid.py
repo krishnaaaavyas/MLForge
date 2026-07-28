@@ -1,26 +1,13 @@
 import math
 
+from mlforge.core.module import Module
 
-class Sigmoid:
-    """
-    Sigmoid activation function.
-    """
 
-    def forward(self, x: float) -> float:
+class Sigmoid(Module):
+
+    def forward(self, x):
+
+        if isinstance(x, list):
+            return [self.forward(v) for v in x]
+
         return 1 / (1 + math.exp(-x))
-
-    def backward(self, predictions, targets):
-
-        gradients = []
-
-        n = len(predictions)
-
-        for p, y in zip(predictions, targets):
-
-            p = max(self.epsilon, min(1 - self.epsilon, p))
-
-            grad = (p - y) / (p * (1 - p))
-
-            gradients.append(grad / n)
-
-        return gradients

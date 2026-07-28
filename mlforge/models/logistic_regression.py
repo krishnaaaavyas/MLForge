@@ -55,8 +55,8 @@ class LogisticRegression:
             dw += grad * x
             db += grad
 
-        self.linear.weight.grad = dw / n
-        self.linear.bias.grad = db / n
+        self.linear.weight.grad = dw
+        self.linear.bias.grad = db
 
     def parameters(self):
         return self.linear.parameters()
