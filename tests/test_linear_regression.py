@@ -4,7 +4,7 @@ model = LinearRegression()
 
 X = [1, 2, 3, 4, 5]
 
-predictions = model.predict(X)
+predictions = model.forward(X)
 
 print(predictions)
 

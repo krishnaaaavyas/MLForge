@@ -1,62 +1,37 @@
-from mlforge.core.linear import Neuron
-from mlforge.activations import Sigmoid
+from mlforge.core.linear import Linear
+from mlforge.activations.sigmoid import Sigmoid
 
 
 class LogisticRegression:
+    """
+    Logistic Regression
 
-    def __init__(self):
+    Linear
+        ↓
+    Sigmoid
+    """
 
-        self.neuron = Neuron(
-            weight=0.0,
-            bias=0.0,
-        )
+    def __init__(self, weight=0.0, bias=0.0):
+        self.linear = Linear(weight, bias)
+        self.sigmoid = Sigmoid()
 
-        self.activation = Sigmoid()
+    def forward(self, x):
+        z = self.linear.forward(x)
+        return self.sigmoid.forward(z)
 
-        self.loss_history = []
+    def predict_proba(self, x):
+        return self.forward(x)
 
-    def predict_proba(self, X):
+    def predict(self, x):
+        return 1 if self.forward(x) >= 0.5 else 0
 
-        probabilities = []
+    def backward(self, x, grad_output):
+        """
+        grad_output = dL/dz
+        """
 
-        for x in X:
-
-            z = self.neuron.forward(x)
-
-            probabilities.append(
-                self.activation.forward(z)
-            )
-
-        return probabilities
-
-    def predict(self, X):
-
-        probabilities = self.predict_proba(X)
-
-        predictions = []
-
-        for probability in probabilities:
-
-            if probability >= 0.5:
-                predictions.append(1)
-            else:
-                predictions.append(0)
-
-        return predictions
-    def backward(self, X, gradients):
-
-        dw = 0.0
-        db = 0.0
-
-        n = len(X)
-
-        for x, grad in zip(X, gradients):
-
-            dw += grad * x
-            db += grad
-
-        self.linear.weight.grad = dw
-        self.linear.bias.grad = db
+        self.linear.weight.grad += grad_output * x
+        self.linear.bias.grad += grad_output
 
     def parameters(self):
         return self.linear.parameters()

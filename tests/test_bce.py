@@ -1,5 +1,4 @@
 from mlforge.losses import BinaryCrossEntropy
-
 loss = BinaryCrossEntropy()
 
 predictions = [0.9, 0.2, 0.8]

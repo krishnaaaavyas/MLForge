@@ -1,38 +1,29 @@
-from mlforge.core.linear import Neuron
+from mlforge.core.linear import Linear
 
 
 class LinearRegression:
+    """
+    Linear Regression model.
 
-    def __init__(self):
+    Uses a single Linear layer internally.
+    """
 
-        self.neuron = Neuron(
-            weight=0,
-            bias=0,
-        )
+    def __init__(self, weight=0.0, bias=0.0):
+        self.linear = Linear(weight, bias)
 
-        self.loss_history = []
+    def forward(self, x):
+        return self.linear.forward(x)
 
-    def forward(self, X):
+    def predict(self, x):
+        return self.forward(x)
 
-        return [
-            self.neuron.forward(x)
-            for x in X
-        ]
+    def backward(self, x, grad_output):
+        """
+        grad_output = dL/dy
+        """
 
-    def backward(self, X, gradients):
-    
-        dw = 0.0
-        db = 0.0
-
-        n = len(X)
-
-        for x, grad in zip(X, gradients):
-
-            dw += grad * x
-            db += grad
-
-        self.linear.weight.grad = dw / n
-        self.linear.bias.grad = db / n
+        self.linear.weight.grad += grad_output * x
+        self.linear.bias.grad += grad_output
 
     def parameters(self):
         return self.linear.parameters()
