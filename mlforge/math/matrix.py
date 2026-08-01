@@ -1,76 +1,176 @@
-# mlforge/math/matrix.py
-from typing import List, Tuple, Union
+from typing import Iterator, List, Tuple, Union
+
 from mlforge.math.vector import Vector
 
+Number = Union[int, float]
+
+
 class Matrix:
-    def __init__(self, data: List[List[Union[int, float]]]):
-        if not data or not isinstance(data, list) or not isinstance(data[0], list):
-            raise ValueError("Matrix must be initialized with a 2D list of numbers.")
-        
+    """
+    Two-dimensional matrix.
+    """
+
+    def __init__(self, data: List[List[Number]]):
+
+        if (
+            not isinstance(data, list)
+            or len(data) == 0
+            or not isinstance(data[0], list)
+        ):
+            raise ValueError("Matrix must be initialized with a non-empty 2D list.")
+
         self.rows = len(data)
         self.cols = len(data[0])
-        
-        # Ensure all rows have equal column length
+
         for row in data:
             if len(row) != self.cols:
-                raise ValueError("All rows in a Matrix must have the same length.")
-        
-        self.data = [[float(val) for val in row] for row in data]
+                raise ValueError(
+                    "All rows must contain the same number of columns."
+                )
+
+        self.data = [
+            [float(x) for x in row]
+            for row in data
+        ]
 
     @property
     def shape(self) -> Tuple[int, int]:
         return (self.rows, self.cols)
 
-    def __getitem__(self, index: int) -> List[float]:
+    def __repr__(self):
+        return f"Matrix(shape={self.shape})"
+
+    def __iter__(self) -> Iterator[List[float]]:
+        return iter(self.data)
+
+    def __getitem__(self, index):
         return self.data[index]
 
-    def __repr__(self) -> str:
-        rows_str = "\n  ".join(str(row) for row in self.data)
-        return f"Matrix([\n  {rows_str}\n], shape={self.shape})"
+    def copy(self):
+        return Matrix(
+            [row.copy() for row in self.data]
+        )
 
-    def get_row(self, row_idx: int) -> Vector:
-        """Returns the specified row as a Vector object."""
-        return Vector(self.data[row_idx])
+    def get_row(self, index: int) -> Vector:
+        return Vector(self.data[index])
 
-    def get_col(self, col_idx: int) -> Vector:
-        """Returns the specified column as a Vector object."""
-        return Vector([self.data[r][col_idx] for r in range(self.rows)])
+    def get_col(self, index: int) -> Vector:
+        return Vector(
+            [row[index] for row in self.data]
+        )
 
-    def matmul(self, other: Union["Matrix", Vector]) -> Union["Matrix", Vector]:
+    @property
+    def T(self):
         """
-        Handles:
-        1. Matrix x Matrix: (M x N) * (N x P) -> (M x P)
-        2. Matrix x Vector: (M x N) * (N x 1) -> Vector of length M
+        Matrix transpose.
         """
+        return Matrix(
+            [
+                [self.data[r][c] for r in range(self.rows)]
+                for c in range(self.cols)
+            ]
+        )
+
+    def __add__(self, other: "Matrix"):
+
+        if self.shape != other.shape:
+            raise ValueError("Matrix dimensions must match.")
+
+        return Matrix(
+            [
+                [
+                    self.data[r][c] + other.data[r][c]
+                    for c in range(self.cols)
+                ]
+                for r in range(self.rows)
+            ]
+        )
+
+    def matmul(self, other):
+
         if isinstance(other, Vector):
+
             if self.cols != len(other):
                 raise ValueError(
-                    f"Shape mismatch for Matrix-Vector multiplication: {self.shape} vs Vector of length {len(other)}"
+                    f"Shape mismatch {self.shape} x {other.shape}"
                 )
-            # Dot product of each row with the vector
-            result = [self.get_row(r).dot(other) for r in range(self.rows)]
-            return Vector(result)
+
+            return Vector(
+                [
+                    self.get_row(r).dot(other)
+                    for r in range(self.rows)
+                ]
+            )
 
         elif isinstance(other, Matrix):
+
             if self.cols != other.rows:
                 raise ValueError(
-                    f"Shape mismatch for Matrix-Matrix multiplication: {self.shape} vs {other.shape}"
+                    f"Shape mismatch {self.shape} x {other.shape}"
                 )
-            
-            result_data = []
+
+            result = []
+
             for r in range(self.rows):
-                row_vec = self.get_row(r)
-                row_result = []
+
+                row = []
+
                 for c in range(other.cols):
-                    col_vec = other.get_col(c)
-                    row_result.append(row_vec.dot(col_vec))
-                result_data.append(row_result)
-            
-            return Matrix(result_data)
+
+                    row.append(
+                        self.get_row(r).dot(
+                            other.get_col(c)
+                        )
+                    )
+
+                result.append(row)
+
+            return Matrix(result)
 
         else:
-            raise TypeError(f"Unsupported operand type for matmul: {type(other)}")
+            raise TypeError(
+                "Unsupported operand for matrix multiplication."
+            )
 
-    def __matmul__(self, other: Union["Matrix", Vector]) -> Union["Matrix", Vector]:
-        """Allows using the @ operator: C = A @ B"""
+    def __matmul__(self, other):
         return self.matmul(other)
+
+    def __add__(self, other):
+
+        if isinstance(other, Matrix):
+
+            if self.shape != other.shape:
+                raise ValueError("Matrix dimensions must match.")
+
+            return Matrix(
+                [
+                    [
+                        self.data[r][c] + other.data[r][c]
+                        for c in range(self.cols)
+                    ]
+                    for r in range(self.rows)
+                ]
+            )
+
+        elif isinstance(other, Vector):
+
+            if self.cols != len(other):
+                raise ValueError(
+                    "Vector length must equal number of columns."
+                )
+
+            # Broadcast the vector across every row
+
+            return Matrix(
+                [
+                    [
+                        self.data[r][c] + other[c]
+                        for c in range(self.cols)
+                    ]
+                    for r in range(self.rows)
+                ]
+            )
+
+        raise TypeError(
+            "Matrix can only be added to Matrix or Vector."
+        )
