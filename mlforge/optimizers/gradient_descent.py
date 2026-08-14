@@ -1,20 +1,28 @@
 class GradientDescent:
 
-    def __init__(self, learning_rate=0.01):
+    def __init__(self, parameters, learning_rate=0.01):
 
-        self.learning_rate = learning_rate
-
-    def step(self, parameters):
-
-        for parameter in parameters:
-
-            parameter.value -= (
-                self.learning_rate
-                * parameter.grad
+        if learning_rate <= 0:
+            raise ValueError(
+                "learning_rate must be positive."
             )
 
-    def zero_grad(self, parameters):
+        self.parameters = list(parameters)
+        self.learning_rate = learning_rate
 
-        for parameter in parameters:
+    def step(self):
 
-            parameter.grad = 0.0
+        for parameter in self.parameters:
+
+            if parameter.grad is None:
+                continue
+
+            parameter.value = (
+                parameter.value
+                - self.learning_rate * parameter.grad
+            )
+
+    def zero_grad(self):
+
+        for parameter in self.parameters:
+            parameter.zero_grad()
