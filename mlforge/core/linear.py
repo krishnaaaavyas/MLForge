@@ -10,6 +10,7 @@ class Linear(Module):
 
     def __init__(self, in_features, out_features):
 
+        super().__init__()
         if in_features <= 0:
             raise ValueError("in_features must be positive.")
 
@@ -56,10 +57,3 @@ class Linear(Module):
         output = output + self.bias.value
 
         return output
-
-    def parameters(self):
-
-        return [
-            self.weight,
-            self.bias,
-        ]

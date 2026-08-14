@@ -1,9 +1,8 @@
-from .core.linear import Linear
-from .models.linear_regression import LinearRegression
-from .models.logistic_regression import LogisticRegression
+"""
+MLForge
 
-__all__ = [
-    "Linear",
-    "LinearRegression",
-    "LogisticRegression",
-]
+A lightweight machine learning framework built from scratch
+for educational purposes.
+"""
+
+__version__ = "0.1.0"
