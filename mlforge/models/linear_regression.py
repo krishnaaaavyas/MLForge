@@ -1,29 +1,19 @@
 from mlforge.core.linear import Linear
+from mlforge.core.module import Module
 
 
-class LinearRegression:
-    """
-    Linear Regression model.
+class LinearRegression(Module):
 
-    Uses a single Linear layer internally.
-    """
+    def __init__(self, in_features=1):
+        super().__init__()
 
-    def __init__(self, weight=0.0, bias=0.0):
-        self.linear = Linear(weight, bias)
+        self.linear = Linear(
+            in_features=in_features,
+            out_features=1,
+        )
 
     def forward(self, x):
         return self.linear.forward(x)
-
-    def predict(self, x):
-        return self.forward(x)
-
-    def backward(self, x, grad_output):
-        """
-        grad_output = dL/dy
-        """
-
-        self.linear.weight.grad += grad_output * x
-        self.linear.bias.grad += grad_output
 
     def parameters(self):
         return self.linear.parameters()

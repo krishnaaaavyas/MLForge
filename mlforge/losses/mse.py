@@ -1,24 +1,22 @@
-def calculate_mse(predictions, actuals):
-    """
-    Calculate Mean Squared Error.
+class MeanSquaredError:
 
-    Parameters:
-        predictions (list): Model predictions.
-        actuals (list): Ground truth values.
+    def forward(self, predictions, targets):
+        if len(predictions) != len(targets):
+            raise ValueError(
+                "Predictions and targets must have the same length."
+            )
 
-    Returns:
-        float: Mean Squared Error.
-    """
+        if len(predictions) == 0:
+            raise ValueError(
+                "Predictions and targets cannot be empty."
+            )
 
-    if len(predictions) != len(actuals):
-        raise ValueError("Lists must have the same length.")
+        squared_errors = [
+            (prediction - target) ** 2
+            for prediction, target in zip(predictions, targets)
+        ]
 
-    squared_error_sum = 0
+        return sum(squared_errors) / len(squared_errors)
 
-    for predicted, actual in zip(predictions, actuals):
-
-        error = actual - predicted
-
-        squared_error_sum += error ** 2
-
-    return squared_error_sum / len(predictions)
+    def __call__(self, predictions, targets):
+        return self.forward(predictions, targets)

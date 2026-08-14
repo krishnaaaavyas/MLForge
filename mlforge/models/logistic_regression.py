@@ -1,18 +1,18 @@
 from mlforge.core.linear import Linear
+from mlforge.core.module import Module
 from mlforge.activations.sigmoid import Sigmoid
 
 
-class LogisticRegression:
-    """
-    Logistic Regression
+class LogisticRegression(Module):
 
-    Linear
-        ↓
-    Sigmoid
-    """
+    def __init__(self, in_features=1):
+        super().__init__()
 
-    def __init__(self, weight=0.0, bias=0.0):
-        self.linear = Linear(weight, bias)
+        self.linear = Linear(
+            in_features=in_features,
+            out_features=1,
+        )
+
         self.sigmoid = Sigmoid()
 
     def forward(self, x):
@@ -22,16 +22,13 @@ class LogisticRegression:
     def predict_proba(self, x):
         return self.forward(x)
 
-    def predict(self, x):
-        return 1 if self.forward(x) >= 0.5 else 0
+    def predict(self, x, threshold=0.5):
+        probabilities = self.predict_proba(x)
 
-    def backward(self, x, grad_output):
-        """
-        grad_output = dL/dz
-        """
-
-        self.linear.weight.grad += grad_output * x
-        self.linear.bias.grad += grad_output
+        return [
+            1 if probability >= threshold else 0
+            for probability in probabilities
+        ]
 
     def parameters(self):
         return self.linear.parameters()
