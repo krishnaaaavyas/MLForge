@@ -1,12 +1,19 @@
+from mlforge.math.matrix import Matrix
 from mlforge.models.linear_regression import LinearRegression
 
-model = LinearRegression()
 
-X = [1, 2, 3, 4, 5]
+def test_linear_regression_forward():
 
-predictions = model.forward(X)
+    model = LinearRegression(
+        in_features=2
+    )
 
-print(predictions)
+    X = Matrix([
+        [1.0, 2.0],
+        [3.0, 4.0],
+        [5.0, 6.0],
+    ])
 
-assert len(predictions) == len(X)
-assert isinstance(predictions, list)
+    predictions = model.forward(X)
+
+    assert predictions.shape == (3, 1)

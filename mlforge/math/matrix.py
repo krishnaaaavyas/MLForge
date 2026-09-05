@@ -43,6 +43,18 @@ class Matrix:
     def shape(self) -> Tuple[int, int]:
         return self.rows, self.cols
 
+    @property
+    def T(self) -> "Matrix":
+        """Return the transpose of the matrix."""
+
+        return Matrix([
+            [
+                self.data[row][col]
+                for row in range(self.rows)
+            ]
+            for col in range(self.cols)
+        ])
+
     def __getitem__(self, index: int):
         return self.data[index]
 
@@ -60,28 +72,47 @@ class Matrix:
             for row in range(self.rows)
         ])
 
-    def __add__(self, other: "Matrix"):
+    def __add__(self, other):
 
-        if not isinstance(other, Matrix):
-            raise TypeError(
-                "Matrix can only be added to another Matrix."
-            )
+        if isinstance(other, Matrix):
 
-        if self.shape != other.shape:
-            raise ValueError(
-                f"Matrix shape mismatch for addition: "
-                f"{self.shape} vs {other.shape}"
-            )
+            if self.shape != other.shape:
+                raise ValueError(
+                    f"Matrix shape mismatch for addition: "
+                    f"{self.shape} vs {other.shape}"
+                )
 
-        result = [
-            [
-                self.data[r][c] + other.data[r][c]
-                for c in range(self.cols)
+            result = [
+                [
+                    self.data[r][c] + other.data[r][c]
+                    for c in range(self.cols)
+                ]
+                for r in range(self.rows)
             ]
-            for r in range(self.rows)
-        ]
 
-        return Matrix(result)
+            return Matrix(result)
+
+        if isinstance(other, Vector):
+
+            if len(other) != self.cols:
+                raise ValueError(
+                    f"Cannot broadcast Vector of length {len(other)} "
+                    f"to Matrix with {self.cols} columns."
+                )
+
+            result = [
+                [
+                    self.data[r][c] + other[c]
+                    for c in range(self.cols)
+                ]
+                for r in range(self.rows)
+            ]
+
+            return Matrix(result)
+
+        raise TypeError(
+            "Matrix can only be added to another Matrix or Vector."
+        )
 
     def __sub__(self, other: "Matrix"):
 
